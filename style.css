@@ -17,6 +17,19 @@ h3 {
     line-height: 1.2
 }
 
+.nav {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    grid-gap: 10px;
+}
+
+.nav-item {
+    justify-self: stretch;
+    text-align: center;
+    border-bottom: 2px #444 solid;
+    color: black;
+}
+
 @media (prefers-color-scheme: dark) {
     body {
         color: white;
