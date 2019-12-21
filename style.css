@@ -17,6 +17,10 @@ h3 {
     line-height: 1.2
 }
 
+h1.title-header {
+    text-align: center;
+}
+
 .nav {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
