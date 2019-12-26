@@ -6,9 +6,11 @@ LIST_GENERATOR = make-blog-post-list.sh list-header.html list-footer.html Makefi
 %/index.html: %/body.html $(POST_GENERATOR)
 	bash ./make-blog-post.sh $^
 
-index.html: $(wildcard */index.html) $(LIST_GENERATOR)
-	# include only root index.html of each post
-	bash ./make-blog-post-list.sh $(filter %/index.html, $^)
+POSTS=$(patsubst %/body.html,%/index.html, $(wildcard */body.html))
+
+index.html: $(POSTS) $(LIST_GENERATOR)
+	bash ./make-blog-post-list.sh $(patsubst %/body.html, %/index.html, $(POSTS))
 
 clean:
 	rm */index.html
+	rm index.html
