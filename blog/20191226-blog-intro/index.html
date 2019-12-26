@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>First post in blog: Hello World!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/blog/blog-style.css">
+</head>
+
+<body>
+    <h1 class="title-header">First post in blog: Hello World!</h1>
+    <a href="/">
+        <div><i class="arrow left"></i>Back to homepage</div>
+    </a>
+    <a href="/blog/">
+        <div><i class="arrow left"></i>Back to blog main page</div>
+    </a>
+
+<p>
+    I made this blog just today because I wanted a space to write stuff down, and to show to my friends when I'm interested in something, in a more skimmable format, instead of subjecting them to a long rant about some arcane topic. (more of that kind of writing to come, hopefully).
+    <br><br>
+    I wanted to have some kind of generator that made the different posts, but the few blog generators I have found are very heavey-weight, and it seemed like a lot of effort to learn.
+    So I hacked together a relatively simple thing with a makefile and two bash scripts! The code is <a href="https://github.com/Joshua-Wright/jorshxyz/tree/master/blog">here</a>.
+    It's pretty simple: there is a template for the header and footer of a pate, and a bash script concatenates them. Another bash script assembles all the resulting filenames into an index file, listing each blog post. The makefile handles listing those files and dependencies and stuff, so it doesn't generate everything every time (although it probably could, it's not very much work).
+    <br>
+    To run it, I made a <a href="https://github.com/Joshua-Wright/jorshxyz/blob/4e44d77d13aa2c13c099884212fc2e335e464700/local-server.sh#L1-L9">script</a> that uses <a href="https://nitoyon.github.io/livereloadx/">livereloadx</a> and inotifywait to auto-refresh the browser and auto-regenerate the html files.
+
+    <br><br>
+    <strong>Advantages:</strong> 
+    <ul>
+        <li>I know how it works</li>
+        <li>it is simple for me to use</li>
+        <li>it produces bare-bones HTML files, so I don't need any fancy editors or hosting</li>
+    </ul>
+    <br>
+    <strong>Disadvantages:</strong>
+    <ul>
+        <li>it's just hacked-together makefiles and bash, it is probably very brittle (although I think I've been careful)</li>
+        <li>I have to write flat html, there is no rich-text available
+            <br><em class="small">(some would consider this an advantage, but personally I would rather have markdown editing than html. Maybe I'll do that eventually.)</em>
+        </li>
+        <li>it probably not super readable for someone else
+            <br><em class="small">I think this is ok for this use, since it is just a personal blog</em>
+        </li>
+    </ul>
+    <br>
+
+    <h2>Future Work</h2>
+    <ul>
+        <li>Content! Now that I have a blog, I must write things!</li>
+        <li>don't check in the generated html files, instead use some kind of CI tool</li>
+        <li>markdown, maybe?</li>
+    </ul>
+</p>
+</body>
+</html>

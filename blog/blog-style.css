@@ -49,6 +49,10 @@ h1.title-header {
     -webkit-transform: rotate(45deg);
 }
 
+.small {
+    font-size: small;
+}
+
 @media (prefers-color-scheme: dark) {
     body {
         color: white;
