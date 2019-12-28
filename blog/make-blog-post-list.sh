@@ -4,11 +4,12 @@ set -exo pipefail
 INFILE="$1"
 DEST="./index.html"
 DEST_NEW="${DEST}.new"
+POST_LIST="$(echo $@ |tr ' ' '\n' |sort -r)"
 
 echo -n > "${DEST_NEW}"
 cat list-header.html >> "${DEST_NEW}"
 
-for post_index in $@; do
+for post_index in ${POST_LIST}; do
     post_folder="$(dirname ${post_index})"
     if [[ -e "${post_folder}/exclude-from-index" ]]; then
         continue
