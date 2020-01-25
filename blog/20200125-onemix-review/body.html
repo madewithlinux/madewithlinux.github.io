@@ -1,29 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
+onemix 3 yoga review (featuring: Linux!)
 
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
-    <title>Onemix 3 yoga review (with linux)</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/blog/blog-style.css">
-</head>
-
-<body>
-    <h1 class="title-header">Onemix 3 yoga review (with linux)</h1>
-    <a href="/">
-        <div><i class="arrow left"></i>Back to homepage</div>
-    </a>
-    <a href="/blog/">
-        <div><i class="arrow left"></i>Back to blog main page</div>
-    </a>
-    <br>
 I wanted a laptop-like device for connecting to various electronics projects, microcontrollers, 3D printers, etc.
 As a bonus, such a laptop would be very light in my backpack, and therefore perfect for travel, especially at hacker conferences where a laptop is most useful.
 So I got myself a Onemix 3 yoga.
 
+<img class="wide" src="IMG_20191204_234528.jpg"/>
 
-<h2>pros/cons</h2>
+<h1>pros/cons</h1>
 I like this one for several reasons:
 <ul>
     <li>touchscreen (with pen)</li>
@@ -54,7 +37,7 @@ But there are some problems:
     <li>the screen is very dense, at 2560x1600, which the CPU <em>just barely</em> is able to handle with the fallback drivers. I usually run it at 1280x800, which also solves display scaling concerns, which is nice.</li>
 </ul>
 
-<h2>size</h2>
+<h1>size</h1>
 Before buying it, I 3D printed a 'blank' that is the same size as the closed laptop, with corners rounded to roughly the same radius (<a href="https://cad.onshape.com/documents/44743ee2eadb7062f94e87c7/w/745688368258b10ad7aac9c7/e/4615b6f122112e2151900522">OnShape cad link here</a>).
 <br>
 With this, I could check where it would fit:
@@ -69,15 +52,18 @@ With this, I could check where it would fit:
 It would have been cool if it could fit inside a (large) jeans front pocket, but I think that would require too much shrinking of the keyboard.
 <br>
 Also, of note: the keybord is roughly equally comfortable for me typing with all fingers or just my thumbs. Interesting.
+<br>
+<a href="IMG_20191227_092224.jpg">
+    Size comparison to a Thinkpad X230
+</a>
 
-<h2>linux compatibility</h2>
+<h1>linux compatibility</h1>
 I settled on ubuntu budgie, since it's interface is good, and the compatibility is also good.
 (XUbuntu (my previous favorite) had problems with the touchscreen working at all, and also rotating the touchscreen when the screen rotates.)
 I made various tweaks, both fixes and personal preference improvements:
 
-<br><br>
+<br>
 
-<br><br>
 disable auto rotation
 (<a href="https://askubuntu.com/questions/1035209/how-to-turn-off-screen-rotation-in-ubuntu-18-04-lts">reference</a>):
 <pre>
@@ -86,14 +72,19 @@ disable auto rotation
     sudo apt remove iio-sensor-proxy
 </pre>
 
-
-<br><br>
+<br>
 Add desktop entry for restarting the budgie shell:
 <pre>nohup budgie-panel --replace</pre>
 The Budgie shell UI does occasionally glitch-out when changing screen resolutions and display densities.
 (<a href="https://www.reddit.com/r/SolusProject/comments/7pfeew/is_there_a_simple_proper_way_to_restart_budgie/">reference</a>)
 
-<h3>firefox tweaks</h3>
+<br><br>
+install tlp to help with battery life (it's still not that great in linux though)
+
+<br><br>
+disable the ubuntu alert sound (<a href="https://help.ubuntu.com/stable/ubuntu-help/sound-alert.html.en">reference</a>)
+
+<h2>firefox tweaks</h2>
 enable firefox to use touch gestures (one finger scrolling) (reference: ArchWiki):
 <pre>
     echo MOZ_USE_XINPUT2=1 |sudo tee /etc/security/pam_env.conf
@@ -102,7 +93,7 @@ enable firefox to use touch gestures (one finger scrolling) (reference: ArchWiki
 (command untested)
 
 
-<h4>about:config:</h4>
+<h3>about:config:</h3>
 set <code>dom.ipc.processCount</code> to <code>2</code> and <code>browser.preferences.defaultPerformanceSettings.enabled</code> to <code>false</code>
 <br>
 and do 
@@ -116,10 +107,30 @@ to
 <code>true</code>
 
 
-<h3>resolution and display scaling</h3>
+<h2>resolution and display scaling</h2>
+I found the display resolution menu in budgie to be not very good. so I <a href="https://github.com/Joshua-Wright/dotfiles/blob/master/system_specific/onemix3yoga/display_resolution_presets.py">wrote a script</a> that generates desktop entries to set common display parameters that I need.
+<br>
+The built-in LCD reports that it's only supported resolution is the full 2560x1600, but I found that it can display much more, even non-integer multiples of width or height.
+If the resolution isn't the same aspect ratio, it displays black bars instead of stretching the picture.
+<pre>
+# /etc/X11/xorg.conf.d/10-monitor.conf
+Section "Monitor"
+    Identifier "eDP-1"
+    Modeline "1440x2560_60.00"  318.00  1440 1568 1720 2000  2560 2563 2573 2651 -hsync +vsync
+    Modeline "1080x1920_60.00"  176.50  1080 1168 1280 1480  1920 1923 1933 1989 -hsync +vsync
+    Modeline "800x1280_60.00"   85.25  800 856 936 1072  1280 1283 1293 1327 -hsync +vsync
+    Modeline "720x1280_60.00"   77.50  720 776 848 976  1280 1283 1293 1327 -hsync +vsync
+EndSection
+</pre>
+
+<h1>accessories</h1>
+This is where a laptop this small really shines: I can have it on my bench, with stuff connected to it, and it doesn't take up too much space on the bench!
+<img class="wide" src="IMG_20191225_231634.jpg"/>
 
 
-<h2>accessories</h2>
-oscilloscope, etc</body>
-</html>
-<!-- TODO: put something in this footer -->
+<h1>conclusion</h1>
+Maybe not a good general purpose laptop on it's own.
+Being able to dock through USB 3.0 type-C makes it a strong contender, though.
+It's not fast, but it's definitely usable.
+Much more usable than the common netbooks that pre-dated this (by a full decade at this point!).
+
