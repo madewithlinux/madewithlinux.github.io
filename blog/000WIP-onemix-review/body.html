@@ -1,0 +1,105 @@
+Onemix 3 yoga review (with linux)
+
+I wanted a laptop-like device for connecting to various electronics projects, microcontrollers, 3D printers, etc.
+As a bonus, such a laptop would be very light in my backpack, and therefore perfect for travel, especially at hacker conferences where a laptop is most useful.
+So I got myself a Onemix 3 yoga.
+
+
+<h2>pros/cons</h2>
+I like this one for several reasons:
+<ul>
+    <li>touchscreen (with pen)</li>
+    <li>USB 3.0 type-A and type-C</li>
+    <li>
+        Linux compatibility (including touchscreen!)
+        (thanks to <a href="https://liliputing.com/2019/06/running-ubuntu-on-the-one-mix-yoga-3-mini-laptop-video.html">this post by liliputing</a> for some compatibilty info before I bought it)
+    </li>
+    <li>reasonably good keyboard: 'qwertyuiop' is full-size, and most of the other buttons are there, if in weird places</li>
+    <li>upgradable storage, with an extra (by default empty) M.2 2242 SATA bay</li>
+</ul>
+But there are some problems:
+<ul>
+    <li>
+        linux compatibility is possible, but not nearly as smooth as with a thinkpad or something
+        <ul>
+            <li>the pen 'works' with the display in linux, but mouse clicking isn't implemented correctly. In windows 10 it works fine, but the latency is so bad as to be unusable anyway.</li>
+            <li>
+                the accelerometer works in linux, but the y-axis is inverted. So landscape is upside-down. 
+                <br>
+                I'm not sure an accelerometer is something I really want in a laptop anyway, though
+            </li>
+            <li>intel video drivers don't work. I'm using the open-source fallback ones</li>
+            <li>when installing linux, the touchscreen doesn't work unless you touch it while the live installer is booting up. (yes, this is crazy weird...)</li>
+        </ul>
+    </li>
+    <li>the keyboard is actually just slightly smaller than full-size, and I don't particularly like it. (I like it better than the god-awful keyboard on my twice-as-expensive XPS-15 though lol)</li>
+    <li>the screen is very dense, at 2560x1600, which the CPU <em>just barely</em> is able to handle with the fallback drivers. I usually run it at 1280x800, which also solves display scaling concerns, which is nice.</li>
+</ul>
+
+<h2>size</h2>
+Before buying it, I 3D printed a 'blank' that is the same size as the closed laptop, with corners rounded to roughly the same radius (<a href="https://cad.onshape.com/documents/44743ee2eadb7062f94e87c7/w/745688368258b10ad7aac9c7/e/4615b6f122112e2151900522">OnShape cad link here</a>).
+<br>
+With this, I could check where it would fit:
+<ul>
+    <li><em>just barely</em> fit in the front pocket of my favorite jeans</li>
+    <li>somewhat reasonable fit in older jeans that I don't like as much</li>
+    <li>too wide to fit in back pocket of basically any pants</li>
+    <li>fits in hoodie front pocket, but kind of sticks out. It's secure there, but still feels wrong. Also the weight makes the hoodie sag.</li>
+    <li>fits inside tablet pocket in backpack no problem whatsoever</li>
+    <li>fits inside laptop pocket in backpack horizontally (i.e. 90 degress off of how a normal laptop fits)</li>
+</ul>
+It would have been cool if it could fit inside a (large) jeans front pocket, but I think that would require too much shrinking of the keyboard.
+<br>
+Also, of note: the keybord is roughly equally comfortable for me typing with all fingers or just my thumbs. Interesting.
+
+<h2>linux compatibility</h2>
+I settled on ubuntu budgie, since it's interface is good, and the compatibility is also good.
+(XUbuntu (my previous favorite) had problems with the touchscreen working at all, and also rotating the touchscreen when the screen rotates.)
+I made various tweaks, both fixes and personal preference improvements:
+
+<br><br>
+
+<br><br>
+disable auto rotation
+(<a href="https://askubuntu.com/questions/1035209/how-to-turn-off-screen-rotation-in-ubuntu-18-04-lts">reference</a>):
+<pre>
+    sudo systemctl stop iio-sensor-proxy.service
+    sudo systemctl disable iio-sensor-proxy.service
+    sudo apt remove iio-sensor-proxy
+</pre>
+
+
+<br><br>
+Add desktop entry for restarting the budgie shell:
+<pre>nohup budgie-panel --replace</pre>
+The Budgie shell UI does occasionally glitch-out when changing screen resolutions and display densities.
+(<a href="https://www.reddit.com/r/SolusProject/comments/7pfeew/is_there_a_simple_proper_way_to_restart_budgie/">reference</a>)
+
+<h3>firefox tweaks</h3>
+enable firefox to use touch gestures (one finger scrolling) (reference: ArchWiki):
+<pre>
+    echo MOZ_USE_XINPUT2=1 |sudo tee /etc/security/pam_env.conf
+    reboot
+</pre>
+(command untested)
+
+
+<h4>about:config:</h4>
+set <code>dom.ipc.processCount</code> to <code>2</code> and <code>browser.preferences.defaultPerformanceSettings.enabled</code> to <code>false</code>
+<br>
+and do 
+<code>ps -e | grep 'Web Content'</code>
+to check actual number of content processes.
+
+<br>
+enable web render by setting
+<code>gfx.webrender.all</code>
+to
+<code>true</code>
+
+
+<h3>resolution and display scaling</h3>
+
+
+<h2>accessories</h2>
+oscilloscope, etc

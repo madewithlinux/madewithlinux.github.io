@@ -17,6 +17,14 @@ h3 {
     line-height: 1.2
 }
 
+ul {
+    margin-top: 0;
+}
+
+pre, code {
+    background-color: #efefef;
+}
+
 h1.title-header {
     text-align: center;
 }
