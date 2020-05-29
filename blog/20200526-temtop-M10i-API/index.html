@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>reverse engineering the API for Temtop M10i WiFi air quality sensor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/blog/blog-style.css">
+</head>
+
+<body>
+    <h1 class="title-header">reverse engineering the API for Temtop M10i WiFi air quality sensor</h1>
+    <a href="/">
+        <div><i class="arrow left"></i>Back to homepage</div>
+    </a>
+    <a href="/blog/">
+        <div><i class="arrow left"></i>Back to blog main page</div>
+    </a>
+    <br>
+<p>code: <a href="https://github.com/Joshua-Wright/home-monitoring-grafana">https://github.com/Joshua-Wright/home-monitoring-grafana</a></p>
+<h1 id="steps">steps</h1>
+<ol>
+<li>setup the sensor on my wifi, and the accompanying android app, as normal</li>
+<li>use <code>tcpdump</code> to capture network traffic for the app during login and viewing historic data for the device</li>
+<li>use Wireshark to analyze the traffic dump and extract HTTP endpoints and how to use them</li>
+<li>use <code>curl</code> to experiment with the HTTP endpoints that you find</li>
+<li>write a python script to imitate the android app and hit that API</li>
+<li>make that python script also write to influxdb</li>
+<li>spend hours and hours going crazy because timezones and daylight savings time are terrible and the API doesn't make any sense and also your influxdb server is UTC but your dev workstation is CDT/CST and the API appears to not even know what a timezone is at all</li>
+</ol>
+<h1 id="packet-capture-on-android-phone">packet capture on android phone</h1>
+<p>My phone already had <code>tcpdump</code> installed (thanks LineageOS!), but if yours doesn't have that, you can probably build and install it if it's rooted.</p>
+<pre><code class="language-bash"><div>adb shell su -c <span class="hljs-string">'tcpdump -s 0 -v -w /sdcard/out.pcap'</span>
+adb pull /sdcard/out.pcap out.pcap
+</div></code></pre>
+<p>(If the target android device is not rooted, you can maybe use mitmproxy on a separate device.)</p>
+<h1 id="wireshark">wireshark</h1>
+<p>wireshark does packet reassembly automatically. So really, you just need to put <code>http</code> in the filter box and start looking at requests and responses.<br>
+when you find something that you want to extract (like some response data), right click -&gt; copy -&gt; bytes -&gt; printable text only<br>
+(demo time! maybe)</p>
+<h1 id="use-curl-to-experiment-with-http-endpoints">use curl to experiment with HTTP endpoints</h1>
+<p>protip: pipe the output to <code>jq</code> to pretty-print it</p>
+<h2 id="login">login</h2>
+<pre><code class="language-bash"><div>curl -v --user-agent <span class="hljs-string">'okhttp/2.7.5'</span> \
+    <span class="hljs-string">'www.i-elitech.com//apiLoginAction.do?method=login&amp;password=TEMPTOP_PASSWORD&amp;username=veryrealemail@email_site.net'</span> |jq
+</div></code></pre>
+<p>returns something like:</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"result"</span>: <span class="hljs-string">"login"</span>,
+  <span class="hljs-attr">"JSESSIONID"</span>: <span class="hljs-string">"JZ3OB4W9MD8TAW5W0Q6DHBTHR9IH2CGN"</span>,
+  <span class="hljs-attr">"token"</span>: <span class="hljs-string">"JZ3OB4W9MD8TAW5W0Q6DHBTHR9IH2CGN"</span>,
+  <span class="hljs-attr">"user"</span>: {
+    <span class="hljs-attr">"email"</span>: <span class="hljs-string">"veryrealemail@email_site.net"</span>,
+    ...
+    <span class="hljs-attr">"token"</span>: <span class="hljs-string">"JZ3OB4W9MD8TAW5W0Q6DHBTHR9IH2CGN"</span>,
+    <span class="hljs-attr">"username"</span>: <span class="hljs-string">"veryrealemail@email_site.net"</span>
+  },
+  <span class="hljs-attr">"androidVersion"</span>: <span class="hljs-number">54</span>,
+  <span class="hljs-attr">"iosVersion"</span>: <span class="hljs-number">10</span>,
+  <span class="hljs-attr">"informationId"</span>: <span class="hljs-number">22</span>
+}
+</div></code></pre>
+<h2 id="list-devices">list devices</h2>
+<p>The android app sends the token as a cookie and a header. I'm pretty sure this is unnecessary, but I replicated it anyway.</p>
+<pre><code class="language-bash"><div>curl -v --cookie <span class="hljs-string">'JSESSIONID=JZ3OB4W9MD8TAW5W0Q6DHBTHR9IH2CGN'</span> -H <span class="hljs-string">'JSESSIONID: JZ3OB4W9MD8TAW5W0Q6DHBTHR9IH2CGN'</span> --user-agent <span class="hljs-string">'okhttp/2.7.5'</span> \
+    <span class="hljs-string">'http://www.i-elitech.com//apiDeviceAction.do?method=getList&amp;typeList=0&amp;userId=7582'</span> |jq
+</div></code></pre>
+<p>The important thing in this response is the device id. We use this to query the device data endpoint.
+(It also lists the names of each sensor, which I could use. But I only have one device that uses this API and it's sensors are very much not going to change ever, so I just hardcoded that in the script that eventually wrote.)</p>
+<pre><code class="language-json"><div>{
+  <span class="hljs-attr">"success"</span>: <span class="hljs-literal">true</span>,
+  <span class="hljs-attr">"total"</span>: <span class="hljs-number">1</span>,
+  <span class="hljs-attr">"rows"</span>: [
+    {
+      <span class="hljs-attr">"creatorName"</span>: <span class="hljs-string">"veryrealemail@email_site.net"</span>,
+      <span class="hljs-attr">"deviceDepartmentId"</span>: <span class="hljs-number">6</span>,
+      <span class="hljs-attr">"firstDataTime"</span>: {
+        ...
+      },
+      <span class="hljs-attr">"guid"</span>: <span class="hljs-string">"16972484243637555312"</span>,
+      <span class="hljs-attr">"id"</span>: <span class="hljs-number">38279</span>,
+      <span class="hljs-attr">"lastDataTime"</span>: {
+        ...
+      },
+      <span class="hljs-attr">"name"</span>: <span class="hljs-string">"M10i"</span>,
+      <span class="hljs-attr">"online"</span>: <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">"probes"</span>: [
+        {
+          <span class="hljs-attr">"currentValue"</span>: <span class="hljs-string">"0.3"</span>,
+          <span class="hljs-attr">"deviceGuid"</span>: <span class="hljs-string">"16972484243637555312"</span>,
+          <span class="hljs-attr">"deviceId"</span>: <span class="hljs-number">38279</span>,
+          <span class="hljs-attr">"name"</span>: <span class="hljs-string">"HCHO"</span>,
+          <span class="hljs-attr">"number"</span>: <span class="hljs-number">1</span>,
+          ...
+        },
+        {
+          <span class="hljs-attr">"currentValue"</span>: <span class="hljs-string">"1.0"</span>,
+          <span class="hljs-attr">"deviceGuid"</span>: <span class="hljs-string">"16972484243637555312"</span>,
+          <span class="hljs-attr">"deviceId"</span>: <span class="hljs-number">38279</span>,
+          <span class="hljs-attr">"name"</span>: <span class="hljs-string">"PM2.5"</span>,
+          <span class="hljs-attr">"number"</span>: <span class="hljs-number">2</span>,
+          ...
+        },
+        {
+          <span class="hljs-attr">"currentValue"</span>: <span class="hljs-string">"1.0"</span>,
+          <span class="hljs-attr">"deviceGuid"</span>: <span class="hljs-string">"16972484243637555312"</span>,
+          <span class="hljs-attr">"deviceId"</span>: <span class="hljs-number">38279</span>,
+          <span class="hljs-attr">"name"</span>: <span class="hljs-string">"TVOC"</span>,
+          <span class="hljs-attr">"number"</span>: <span class="hljs-number">3</span>,
+          ...
+        },
+        {
+          <span class="hljs-attr">"currentValue"</span>: <span class="hljs-string">"4.0"</span>,
+          <span class="hljs-attr">"deviceGuid"</span>: <span class="hljs-string">"16972484243637555312"</span>,
+          <span class="hljs-attr">"deviceId"</span>: <span class="hljs-number">38279</span>,
+          <span class="hljs-attr">"name"</span>: <span class="hljs-string">"AQI"</span>,
+          <span class="hljs-attr">"number"</span>: <span class="hljs-number">4</span>,
+          ...
+        }
+      ],
+      ...
+      <span class="hljs-attr">"wifi"</span>: <span class="hljs-literal">true</span>,
+      <span class="hljs-attr">"wifiType"</span>: <span class="hljs-number">0</span>
+    }
+  ],
+  <span class="hljs-attr">"authorityMap"</span>: {
+    <span class="hljs-attr">"ENERGY"</span>: <span class="hljs-number">2</span>,
+    <span class="hljs-attr">"REAL_TIME_DATA"</span>: <span class="hljs-number">0</span>,
+    ...
+  }
+}
+</div></code></pre>
+<h2 id="get-device-data">get device data</h2>
+<p>This is basically the same as the above process to get the devices list, except that here we can get all the data between two dates.</p>
+<p>I used this API and queried for the last N minutes, instead of just periodically checking the most recent data for two reasons:</p>
+<ol>
+<li>to make sure I don't miss any data</li>
+<li>so I can backfill readings for the whole time I've had this device</li>
+</ol>
+<p>(side note: the API has what looks like a pagination-type-thing, in case we request too much data, but that doesn't seem to work. It just returns all the data between the two dates, even if that's more than the row limit you requested.)</p>
+<h1 id="write-python-http-api">write python HTTP api</h1>
+<p>use requests, and imitate the user-agent string that the android app uses. (I didn't test without this, but it's probably good to keep it consistent just to be safe.)</p>
+<p>I saw a note on stackoverflow or somewhere, that said when you're scraping a website, it's a good idea to put an email address or some contact info in a HTTP header. I decided not to do this, though, since I already made an account with them. So if they need to send me a nastygram about how I'm using their service, they already have everything they need to do that.</p>
+
+<h1 id="hook-it-up-to-grafana">hook it up to grafana</h1>
+<p>basically just follow the guide at <a href="http://nilhcem.com/iot/home-monitoring-with-mqtt-influxdb-grafana">http://nilhcem.com/iot/home-monitoring-with-mqtt-influxdb-grafana</a></p>
+<p>I had to change a few things in the docker compose file to get it to work, and that is included in my fork of the repo.</p>
+</body>
+</html>
+<!-- TODO: put something in this footer -->

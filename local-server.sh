@@ -2,6 +2,11 @@
 # set -exo pipefail
 # trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 
+# requires:
+# npm install -g livereloadx
+# sudo apt install inotify-tools
+
+
 livereloadx -s . &
 
 while true; do
