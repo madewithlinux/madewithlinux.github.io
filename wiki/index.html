@@ -159,6 +159,10 @@ Error message and password prompt
 
 <li>$:/state/add-plugin-info/$:/temp/ServerConnection/https://tiddlywiki.com/library/v5.1.22/index.html/$:/temp/RemoteAssetInfo/https://tiddlywiki.com/library/v5.1.22/index.html/$:/plugins/tiddlywiki/codemirror</li>
 
+<li>$:/state/showeditpreview</li>
+
+<li>$:/state/sidebar</li>
+
 <li>$:/state/tab--1498284803</li>
 
 <li>$:/state/tab--1963855381</li>
@@ -396,6 +400,8 @@ Error message and password prompt
 <li>$:/view</li>
 
 <li>wiki homepage</li>
+
+<li>Yoshimoto Cube</li>
 
 </ul>
 </p>
@@ -9810,6 +9816,12 @@ Error message and password prompt
 <div created="20200901161616641" modified="20200901161616641" title="$:/state/add-plugin-info/$:/temp/ServerConnection/https://tiddlywiki.com/library/v5.1.22/index.html/$:/temp/RemoteAssetInfo/https://tiddlywiki.com/library/v5.1.22/index.html/$:/plugins/tiddlywiki/codemirror">
 <pre>yes</pre>
 </div>
+<div created="20200901162605042" modified="20200901162605042" title="$:/state/showeditpreview">
+<pre>yes</pre>
+</div>
+<div created="20200901162030089" modified="20200901162030089" title="$:/state/sidebar">
+<pre>no</pre>
+</div>
 <div created="20200901153907678" modified="20200901153910902" title="$:/state/tab--1498284803">
 <pre>$:/core/ui/AdvancedSearch/Shadows</pre>
 </div>
@@ -9831,7 +9843,7 @@ Error message and password prompt
 <div title="$:/status/RequireReloadDueToPluginChange">
 <pre>no</pre>
 </div>
-<div created="20200901161949867" list="[[wiki homepage]] GettingStarted" modified="20200901161949867" title="$:/StoryList">
+<div created="20200901161949867" list="[[Yoshimoto Cube]] [[wiki homepage]] GettingStarted" modified="20200901161949867" title="$:/StoryList">
 <pre></pre>
 </div>
 <div created="20200901153859182" modified="20200901153904375" title="$:/temp/advancedsearch">
@@ -9895,7 +9907,7 @@ Error message and password prompt
     }
 }</pre>
 </div>
-<div created="20200901153708235" modified="20200901153716507" title="$:/temp/NewTagName">
+<div created="20200901153708235" modified="20200901163313688" title="$:/temp/NewTagName">
 <pre></pre>
 </div>
 <div author="Paco Rivière" core-version="&gt;=5.0.0" created="20200901161605429" dependents="" description="Catalan (Spain)" icon="data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%0A%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22810%22%20height%3D%22540%22%3E%0A%3Crect%20width%3D%22810%22%20height%3D%22540%22%20fill%3D%22%23FCDD09%22%2F%3E%0A%3Cpath%20stroke%3D%22%23DA121A%22%20stroke-width%3D%2260%22%20d%3D%22M0%2C90H810m0%2C120H0m0%2C120H810m0%2C120H0%22%2F%3E%0A%3C%2Fsvg%3E" modified="20200901161605429" name="ca-ES" original-plugin-type="language" original-tags="" original-title="$:/languages/ca-ES" original-type="application/json" requires-reload="no" server-url="https://tiddlywiki.com/library/v5.1.22/index.html" tags="$:/tags/RemoteAssetInfo" title="$:/temp/RemoteAssetInfo/https://tiddlywiki.com/library/v5.1.22/index.html/$:/languages/ca-ES" type="text/vnd.tiddlywiki" version="5.1.22">
@@ -10975,6 +10987,76 @@ This plugin also requires the JSZip plugin ([[$:/plugins/tiddlywiki/jszip]]) to 
 <div created="20200901161221260" modified="20200901161302124" tags="" title="wiki homepage">
 <pre>I now have a personal wiki! neat!
 (I'm still figuring out how to use it though, lol)</pre>
+</div>
+<div created="20200901162023180" modified="20200901164704773" tags="fidget geometry [[bistable mechanism]] [[compliant mechanism]] flexure [[3d printing]] flex" title="Yoshimoto Cube">
+<pre>Also known as:
+
+* infinity cube
+* fidget cube
+* magic star cube
+* &quot;the fube&quot; (a brand name, I think)
+* Kobayashi Fidget Cube
+
+interesting links/references:
+
+* https://en.wikipedia.org/wiki/Yoshimoto_Cube
+* http://www1.ttcn.ne.jp/a-nishi/y_cube/z_y_cube.html
+
+It's got interesting geometry: it's not the same cube repeated 8 times, the middle 4 cubes are actually different. 
+
+apparently, the geometry also kind of works with just 4 cubes: https://www.thingiverse.com/thing:2417224
+
+! 3d printing it
+
+there's plenty of models of this cube to print, with print-in-place hinges.
+
+* https://www.thingiverse.com/thing:929504
+* https://www.thingiverse.com/thing:1269699
+* https://www.thingiverse.com/thing:2155281
+
+
+TPU/flexible designs are interesting to me. usually, they suffer from the issue that the hinges have a 'resting position' and so it is less satisfying to fidget with.
+
+* https://www.thingiverse.com/thing:2835244
+* https://www.thingiverse.com/thing:2786094
+
+
+There are some designs with magnets
+
+* https://www.thingiverse.com/thing:2139275
+* https://www.thingiverse.com/thing:3640602
+
+!! bistable hinges
+I'm most interest in how to make one of these with bistable hinges. Because that would be really cool, I think.
+
+challenges/design goals:
+
+* I'm not sure what is the right tradeoff between hinges that snap satisfyingly into place, and hinges that are easy to move
+* assembly can be a pain, so designs that print-in-place in one solid piece are greatly preferred
+* TPU prints really slow and I am impatient
+* The design should be quiet in operation, so that I can fidget with it while on a conference call and nobody will hear it through my mic. This probably eliminates anything printed from rigid plastic, or anything with gears?
+
+
+!!! I have made a few prototypes so far:
+
+!!! https://cults3d.com/en/3d-model/gadget/tpu-bistable-fidget-cube
+An elastic spring on the inside works pretty well.
+This hinge is most tensioned at the midpoint between the two resting positions, which means it must have a high resting tension in order to hold the hinge in the reverse of it's rest position reliably (where the hinge has rotated 180 degrees from the orientation in which it was printed).
+
+I have tried, in a different design, to change the length of the in-hinge cut so that the elastic band has more leverage when the hinge is 180 out of resting position. But then you run into problems of the total length of the elastic: when all the hinges in the cube are in their reverse position, the total length of the elastic is thusly much smaller, and so it isn't stretched as much and doesn't exert as much force to hold the cube in shape.
+
+
+!!! https://twitter.com/madewithlinux/status/1300119957519429632
+''Magnets!''
+This works pretty well, actually. Magnets are relatively expensive, though, and also it's much less easy to tune the exact tension in each hinge. Also, it has a tendency to snap into place, and that snap can be noisy...
+
+
+!! gear hinges
+could be cool, but it's hard to print the gears small enough. Also, gears are particularly sensitive to print orientation, or else they don't turn out very well.
+https://twitter.com/madewithlinux/status/1293265331167940609
+
+
+</pre>
 </div>
 
 
